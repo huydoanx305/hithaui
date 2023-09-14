@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 export enum QuestionType {
   FreeText,
   MultipleChoice,
@@ -11,4 +12,15 @@ export interface FormQuestion {
   isRequired: boolean
   type: QuestionType
   options?: any[]
+=======
+export interface Form {
+  id: number
+  name: string
+  isActive: boolean
+  coverImage: string | null | File
+  createdAt: string
+  updatedAt: string
+  eventId: number
+  event: EventSumary
+>>>>>>> d123f7d (✨ Implement forms list screen)
 }
