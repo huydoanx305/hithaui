@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+import type { EventSumary } from './events'
+
 export enum QuestionType {
   FreeText,
   MultipleChoice,
@@ -12,7 +13,8 @@ export interface FormQuestion {
   isRequired: boolean
   type: QuestionType
   options?: any[]
-=======
+}
+
 export interface Form {
   id: number
   name: string
@@ -22,5 +24,4 @@ export interface Form {
   updatedAt: string
   eventId: number
   event: EventSumary
->>>>>>> d123f7d (✨ Implement forms list screen)
 }

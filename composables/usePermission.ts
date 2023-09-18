@@ -8,9 +8,12 @@ export function usePermission(page: Page) {
   const { userRoles } = storeToRefs(authStore)
 
   const isAccessible = computed(() => {
-    return PAGE_PERMISSION[currentPage.value].some((roleId: number) =>
-      userRoles.value.includes(roleId),
-    )
+    return PAGE_PERMISSION[currentPage.value]
+      ? PAGE_PERMISSION[currentPage.value]?.some((roleId: number) => {
+        return userRoles.value.includes(roleId)
+      },
+      )
+      : true
   })
 
   return { isAccessible }

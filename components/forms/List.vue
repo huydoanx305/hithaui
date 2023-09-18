@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Form } from '~/types'
+
 defineProps<{
   forms: Form[]
 }>()

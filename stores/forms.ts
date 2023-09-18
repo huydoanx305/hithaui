@@ -1,3 +1,5 @@
+import type { Form } from '~/types'
+
 export const useFormsStore = defineStore('forms', () => {
   const { $api } = useNuxtApp()
   const forms = ref<Form[]>([])
