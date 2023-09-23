@@ -1,10 +1,44 @@
 <script setup lang="ts">
-import type { Form } from '~/types'
+import ConfirmPopup from '~/components/app/ConfirmPopup.vue'
+import ToggleSwitch from '~/components/app/ToggleSwitch.vue'
+import type { Form, UpdateForm } from '~/types'
 
-defineProps<{
+const props = defineProps<{
   forms: Form[]
 }>()
 const { formTableColumns } = useForms()
+const formsStore = useFormsStore()
+
+const isVisibleConfirmPopup = ref(true)
+
+function openConfirmPopup() {
+  isVisibleConfirmPopup.value = true
+}
+
+function closeConfirmPopup() {
+  isVisibleConfirmPopup.value = false
+}
+
+async function activeUnactiveForm(formId: number, isActive: boolean) {
+  const formUpdate = props.forms.find(form => form.id === formId)
+  const formUpdateDto = {
+    isActive,
+  } as UpdateForm
+
+  if (formUpdate) {
+    await formsStore.updateForm(formUpdate.id, formUpdateDto)
+    useNotification({
+      message: isActive ? 'Active form successfully' : 'Unactive form successfully',
+      type: 'success',
+    })
+  }
+  else {
+    useNotification({
+      message: 'Form not found!',
+      type: 'error',
+    })
+  }
+}
 </script>
 
 <template>
@@ -12,12 +46,7 @@ const { formTableColumns } = useForms()
     <table class="form-table">
       <thead class="table-head">
         <tr class="row">
-          <th
-            v-for="{ value, label } in formTableColumns"
-            :key="value"
-            class="cell"
-            :class="`-${value}`"
-          >
+          <th v-for="{ value, label } in formTableColumns" :key="value" class="cell" :class="`-${value}`">
             {{ label }}
           </th>
         </tr>
@@ -31,11 +60,7 @@ const { formTableColumns } = useForms()
             {{ form.event.name }}
           </td>
           <td class="cell -status">
-            <span
-              :class="{ '-active': form.isActive, '-unactive': !form.isActive }"
-            >
-              {{ form.isActive ? "Active" : "Unactive" }}
-            </span>
+            <ToggleSwitch v-model="form.isActive" label="ON|OFF" @click="() => isVisibleConfirmPopup = true" />
           </td>
           <td class="cell -createdAt">
             {{ formatDate(form.createdAt) }}
@@ -51,7 +76,14 @@ const { formTableColumns } = useForms()
         </tr>
       </tbody>
     </table>
+    <ConfirmPopup
+      title="Confirm Active form"
+      text="You won't be able to revert this!"
+      :is-visible="isVisibleConfirmPopup"
+      @close-confirm-popup="closeConfirmPopup"
+    />
   </div>
+  <div>Hello</div>
 </template>
 
 <style scoped lang="scss">
@@ -64,7 +96,7 @@ const { formTableColumns } = useForms()
     @apply text-xs text-gray-700 uppercase bg-gray-100;
   }
 
-  > .form-table > .table-body > .row {
+  > .form-table > .table-body>.row {
     @apply bg-white border-b hover:bg-gray-50;
   }
 
@@ -96,20 +128,13 @@ const { formTableColumns } = useForms()
     > .-detail {
       @apply text-blue-500 cursor-pointer;
     }
+
     > .-edit {
       @apply text-primary-500 cursor-pointer;
     }
+
     > .-delete {
       @apply text-red-500 cursor-pointer;
-    }
-  }
-
-  > .form-table > .table-body > .row > .cell.-status {
-    > .-active {
-      @apply bg-green-200 text-green-800 text-xs text-center font-medium px-3 py-1 rounded-full;
-    }
-    > .-unactive {
-      @apply bg-red-200 text-red-800 text-xs text-center font-medium px-3 py-1 rounded-full;
     }
   }
 }

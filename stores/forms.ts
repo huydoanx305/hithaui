@@ -1,4 +1,4 @@
-import type { Form, FormDetails } from '~/types'
+import type { Form, FormDetails, UpdateForm } from '~/types'
 
 export const useFormsStore = defineStore('forms', () => {
   const { $api } = useNuxtApp()
@@ -29,5 +29,21 @@ export const useFormsStore = defineStore('forms', () => {
     }
   }
 
-  return { fetchForms, fetchForm, forms, form }
+  const updateForm = async (formId: number, updateFormDto: UpdateForm) => {
+    try {
+      const response = await $api<FormDetails>(`/api/v1/forms/${formId}`, {
+        method: 'PATCH',
+        body: updateFormDto,
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      })
+      form.value = response
+    }
+    catch (error) {
+      throw createError('Page not found!')
+    }
+  }
+
+  return { fetchForms, fetchForm, updateForm, forms, form }
 })

@@ -33,3 +33,8 @@ export interface FormDetails extends Form {
 export interface FormAnswer {
   [key: string]: string | number[]
 }
+
+export type UpdateForm = Pick<
+  Form,
+  'name' | 'coverImage'
+> & { isActive: boolean | null }
