@@ -14,6 +14,7 @@ export function useDialogConfirm() {
   const openDialog = (dialog: AppDialogConfirm) => {
     dialogConfirm.content = dialog
     dialogConfirm.isVisible = true
+    dialogConfirm.confirmStatus = undefined
   }
 
   const handleConfirm = () => {
@@ -29,7 +30,10 @@ export function useDialogConfirm() {
     openDialog(dialog)
     return new Promise((resolve) => {
       watch(() => dialogConfirm.confirmStatus, () => {
-        resolve(dialogConfirm.confirmStatus)
+        if (dialogConfirm.confirmStatus)
+          resolve(true)
+        else
+          resolve(false)
       })
     })
   }
