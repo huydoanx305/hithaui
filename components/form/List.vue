@@ -1,38 +1,10 @@
 <script setup lang="ts">
-import ToggleActiveForm from './ToggleActiveForm.vue'
 import type { Form } from '~/types'
 
 defineProps<{
   forms: Form[]
 }>()
 const { formTableColumns } = useForms()
-// const formsStore = useFormsStore()
-
-// function initDialogConfirmActive(isActive: boolean) {
-//   return {
-//     message: `You confirm ${isActive ? 'inactive' : 'active'} of this form`,
-//   }
-// }
-
-// async function activeInactiveForm(form: Form) {
-//   const formUpdateDto = {
-//     isActive: form.isActive,
-//   } as UpdateForm
-
-//   try {
-//     await formsStore.updateForm(form.id + 3, formUpdateDto)
-//     useNotification({
-//       message: `${form.isActive ? 'Active' : 'Inactive'} form successfully`,
-//       type: 'success',
-//     })
-//   }
-//   catch (error) {
-//     useNotification({
-//       message: `${form.isActive ? 'Active' : 'Inactive'} form failed`,
-//       type: 'error',
-//     })
-//   }
-// }
 </script>
 
 <template>
@@ -54,15 +26,10 @@ const { formTableColumns } = useForms()
             {{ form.event.name }}
           </td>
           <td class="cell -status">
-            <!-- <AppToggleSwitch
-              v-model="form.isActive"
-              :dialog-confirm="initDialogConfirmActive(form.isActive)"
-              label="ON|OFF"
-            /> -->
-            <ToggleActiveForm
+            <FormToggleActive
               v-model="form.isActive"
               :form-id="form.id"
-              label="ON|OFF"
+              label="Active|Inactive"
             />
           </td>
           <td class="cell -createdAt">
