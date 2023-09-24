@@ -1,44 +1,38 @@
 <script setup lang="ts">
-import ConfirmPopup from '~/components/app/ConfirmPopup.vue'
-import ToggleSwitch from '~/components/app/ToggleSwitch.vue'
-import type { Form, UpdateForm } from '~/types'
+import ToggleActiveForm from './ToggleActiveForm.vue'
+import type { Form } from '~/types'
 
-const props = defineProps<{
+defineProps<{
   forms: Form[]
 }>()
 const { formTableColumns } = useForms()
-const formsStore = useFormsStore()
+// const formsStore = useFormsStore()
 
-const isVisibleConfirmPopup = ref(true)
+// function initDialogConfirmActive(isActive: boolean) {
+//   return {
+//     message: `You confirm ${isActive ? 'inactive' : 'active'} of this form`,
+//   }
+// }
 
-function openConfirmPopup() {
-  isVisibleConfirmPopup.value = true
-}
+// async function activeInactiveForm(form: Form) {
+//   const formUpdateDto = {
+//     isActive: form.isActive,
+//   } as UpdateForm
 
-function closeConfirmPopup() {
-  isVisibleConfirmPopup.value = false
-}
-
-async function activeUnactiveForm(formId: number, isActive: boolean) {
-  const formUpdate = props.forms.find(form => form.id === formId)
-  const formUpdateDto = {
-    isActive,
-  } as UpdateForm
-
-  if (formUpdate) {
-    await formsStore.updateForm(formUpdate.id, formUpdateDto)
-    useNotification({
-      message: isActive ? 'Active form successfully' : 'Unactive form successfully',
-      type: 'success',
-    })
-  }
-  else {
-    useNotification({
-      message: 'Form not found!',
-      type: 'error',
-    })
-  }
-}
+//   try {
+//     await formsStore.updateForm(form.id + 3, formUpdateDto)
+//     useNotification({
+//       message: `${form.isActive ? 'Active' : 'Inactive'} form successfully`,
+//       type: 'success',
+//     })
+//   }
+//   catch (error) {
+//     useNotification({
+//       message: `${form.isActive ? 'Active' : 'Inactive'} form failed`,
+//       type: 'error',
+//     })
+//   }
+// }
 </script>
 
 <template>
@@ -60,7 +54,16 @@ async function activeUnactiveForm(formId: number, isActive: boolean) {
             {{ form.event.name }}
           </td>
           <td class="cell -status">
-            <ToggleSwitch v-model="form.isActive" label="ON|OFF" @click="() => isVisibleConfirmPopup = true" />
+            <!-- <AppToggleSwitch
+              v-model="form.isActive"
+              :dialog-confirm="initDialogConfirmActive(form.isActive)"
+              label="ON|OFF"
+            /> -->
+            <ToggleActiveForm
+              v-model="form.isActive"
+              :form-id="form.id"
+              label="ON|OFF"
+            />
           </td>
           <td class="cell -createdAt">
             {{ formatDate(form.createdAt) }}
@@ -76,14 +79,7 @@ async function activeUnactiveForm(formId: number, isActive: boolean) {
         </tr>
       </tbody>
     </table>
-    <ConfirmPopup
-      title="Confirm Active form"
-      text="You won't be able to revert this!"
-      :is-visible="isVisibleConfirmPopup"
-      @close-confirm-popup="closeConfirmPopup"
-    />
   </div>
-  <div>Hello</div>
 </template>
 
 <style scoped lang="scss">

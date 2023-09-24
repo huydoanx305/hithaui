@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { AppDialogConfirm } from '~/types'
+import type { UpdateForm } from '~/types'
 
 const props = defineProps<{
   modelValue: boolean
-  dialogConfirm?: AppDialogConfirm
+  formId: number
   label?: string
 }>()
 
@@ -12,6 +12,7 @@ const emit = defineEmits<{
 }>()
 
 const { confirm, closeDialog } = useDialogConfirm()
+const formsStore = useFormsStore()
 
 const curValue = ref<boolean>(props.modelValue)
 
@@ -38,24 +39,42 @@ const getMaxLabel = computed(() => {
   return maxLabel
 })
 
-async function toggleState() {
-  if (props.dialogConfirm) {
-    const isOk = await confirm(props.dialogConfirm)
-    if (isOk) {
-      curValue.value = !curValue.value
+const initDialogConfirmActive = computed(() => {
+  return {
+    message: `You confirm ${curValue.value ? 'inactive' : 'active'} of this form`,
+  }
+})
+
+async function activeInactiveForm() {
+  const isOk = await confirm(initDialogConfirmActive.value)
+  if (isOk) {
+    const changeActive = !curValue.value
+    const formUpdateDto = {
+      isActive: changeActive,
+    } as UpdateForm
+
+    try {
+      await formsStore.updateForm(props.formId, formUpdateDto)
+      curValue.value = changeActive
       emit('update:modelValue', curValue.value)
+      useNotification({
+        message: `${changeActive ? 'Active' : 'Inactive'} form successfully`,
+        type: 'success',
+      })
     }
-    closeDialog()
+    catch (error) {
+      useNotification({
+        message: `${changeActive ? 'Active' : 'Inactive'} form failed`,
+        type: 'error',
+      })
+    }
   }
-  else {
-    curValue.value = !curValue.value
-    emit('update:modelValue', curValue.value)
-  }
+  closeDialog()
 }
 </script>
 
 <template>
-  <div class="toggle-switch" :class="getIsActive" @click="toggleState">
+  <div class="toggle-switch" :class="getIsActive" @click="activeInactiveForm">
     <span class="label">{{ getLabel }}</span>
     <span class="maxlabel">{{ getMaxLabel }}</span>
     <div class="knob" />
