@@ -3,7 +3,7 @@ import type { AppDialogConfirm } from '~/types'
 const dialogConfirm = reactive<{
   isVisible: boolean
   content?: AppDialogConfirm
-  confirmStatus: boolean
+  confirmStatus?: boolean
 }>({
   isVisible: false,
   content: undefined,
